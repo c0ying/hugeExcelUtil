@@ -40,14 +40,26 @@ import java.util.Map;
 public abstract class SimpleExcelParser<T> implements ImportProcesser<T>{
 	
 	private Logger logger = LoggerFactory.getLogger(SimpleExcelParser.class);
-	
-	private List<String> defalutMappings;//默认映射字段
-	private ThreadLocal<Map<String,Object>> context = new ThreadLocal<>();//运行上下文
+
 	private String clz;
+	private ThreadLocal<Map<String,Object>> context = new ThreadLocal<>();//运行上下文
+	protected ImportProcesser<T> importProcesser;
+	private List<String> defalutMappings;//默认映射字段
 	private Map<String, CustomTransformBean> customTransformBeanMap = new HashMap<>(0);
 	
 	public SimpleExcelParser(List<String> mappings) {
 		Assert.notNull(mappings, "mapping can not be null");
+		Type type = this.getClass().getGenericSuperclass();
+		if (type instanceof ParameterizedType){
+			this.clz = (((ParameterizedType) type).getActualTypeArguments()[0]).getTypeName();
+		}else{
+			throw new RuntimeException();
+		}
+		this.defalutMappings = mappings;
+		this.context.set(new HashMap<>());
+	}
+
+	public SimpleExcelParser(ImportProcesser<T> importProcesser,List<String> mappings){
 		Type type = this.getClass().getGenericSuperclass();
 		if (type instanceof ParameterizedType){
 			this.clz = (((ParameterizedType) type).getActualTypeArguments()[0]).getTypeName();
@@ -66,7 +78,9 @@ public abstract class SimpleExcelParser<T> implements ImportProcesser<T>{
 		this.getContext().put("fieldsMapping", mappings);
 	}
 	
-	public void preHandler(List<List<String>> datas, Map<String,Object> context) {}
+	public void preHandler(List<List<String>> datas, Map<String,Object> context) {
+		if (importProcesser != null) importProcesser.preHandler(datas, context);
+	}
 
 
 	private List<T> transformBean(List<List<String>> datas) throws Exception {
@@ -128,16 +142,22 @@ public abstract class SimpleExcelParser<T> implements ImportProcesser<T>{
 	
 	@Override
 	public void handleException(Throwable t) {
-		t.printStackTrace();
+		if (importProcesser != null){
+			importProcesser.handleException(t);
+		}else{
+			t.printStackTrace();
+		}
 	}
 
 	@Override
-	public void validate(List<T> mT) throws ParseExcelException {}
-
-	protected void init(Map<String, Object> context) {
+	public void validate(List<T> mT) throws ParseExcelException {
+		if (importProcesser != null) importProcesser.validate(mT);
 	}
 
+	protected void init(Map<String, Object> context) {}
+
 	public void destroy(){
+		if (importProcesser != null) importProcesser.destroy();
 		context.remove();
 	}
 

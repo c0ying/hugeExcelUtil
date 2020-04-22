@@ -1,12 +1,11 @@
 package com.c0ying.framework.exceldata.delegate;
 
 import com.c0ying.framework.exceldata.imparse.SimpleExcelParser;
+import com.c0ying.framework.exceldata.imparse.bean.ParseExcelException;
 
 import java.util.List;
 
 public interface ExcelFileReadDelegater {
 
-    List<List<String>> readExcel(String fileUrl, boolean skipHead);
-
-    void saxReadExcel(String fileUrl, SimpleExcelParser simpleExcelParser);
+    <T> void readExcel(String fileUrl, SimpleExcelParser<T> simpleExcelParser) throws Exception;
 }

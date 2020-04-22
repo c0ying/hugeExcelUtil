@@ -10,7 +10,7 @@ public class ReadExcelTest {
 
     @Test
     public void readExcelTest(){
-        DataImportExcelHandler<Data> importExcelHandler = new DataImportExcelHandler<Data>(new TestReadDataParser(), "E:\\1.xlsx");
+        DataImportExcelHandler<Data> importExcelHandler = new DataImportExcelHandler<Data>(new TestReadDataParser(), "file/10.xlsx");
         try {
             importExcelHandler.call();
         } catch (Exception e) {
@@ -20,11 +20,15 @@ public class ReadExcelTest {
 
     @Test
     public void saxReadExcelTest(){
-        SaxDataImportExcelHandler<Data> importExcelHandler = new SaxDataImportExcelHandler<>(new TestReadDataParser(),"E:\\1.xlsx");
+        SaxDataImportExcelHandler<Data> importExcelHandler = new SaxDataImportExcelHandler<>(new TestReadDataParser(),getResource("file/10.xlsx"));
         try {
             importExcelHandler.handler();
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private String  getResource(String fileUrl){
+        return Thread.currentThread().getContextClassLoader().getResource("file/10.xlsx").getFile();
     }
 }

@@ -12,15 +12,10 @@ public abstract class AbstractImportExcelHandler<T> {
     private Logger logger = LoggerFactory.getLogger(SimpleExcelParser.class);
 
     protected SimpleExcelParser<T> parser;
-    protected String fileUrl;
     protected Map<String, Object> context = new HashMap<>();
 
-    public AbstractImportExcelHandler(SimpleExcelParser<T> parser, String fileUrl) {
-        this.parser = parser;
-        this.fileUrl = fileUrl;
-    }
 
-    public abstract List<T> handler() throws Exception ;
+    public abstract void handler(String fileUrl, SimpleExcelParser<T> parser) throws Exception ;
 
     protected List<T> processInternal(List<List<String>> contentStrList) throws Exception{
         List<T> mT = parser.parse(contentStrList);

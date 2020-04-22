@@ -7,7 +7,9 @@ import java.util.Map;
 
 public interface ImportProcesser<T> extends ImportMeta{
 
-	void preHandler(List<List<String>> datas, Map<String,Object> context);
+	default void preHandler(List<List<String>> datas, Map<String,Object> context){
+
+	}
 
 	/**
 	 * 处理转换后数据
@@ -25,7 +27,9 @@ public interface ImportProcesser<T> extends ImportMeta{
 	 * 处理异常
 	 * @param t
 	 */
-	void handleException(Throwable t);
+	default void handleException(Throwable t){
+		t.printStackTrace();
+	}
 
 	void destroy();
 }

@@ -25,7 +25,7 @@ public class SaxDataImportExcelHandler<T> extends AbstractImportExcelHandler<T>{
 			if (context != null && context.containsKey("fieldsMapping")) {
 				parser.setFieldsMapping((List<String>) context.get("fieldsMapping"));
 			}
-			excelFileReadDelegate.saxReadExcel(fileUrl, parser);
+			excelFileReadDelegate.readExcel(fileUrl, parser);
 		} catch (Exception e) {
 			throw new ParseExcelException(e.getMessage(), e);
 		}finally {

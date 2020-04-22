@@ -47,6 +47,14 @@ public class StreamParseDataListener<T> extends AnalysisEventListener<Map<Intege
 
     @Override
     public void doAfterAllAnalysed(AnalysisContext context) {
+        try {
+            List<T> mT = simpleExcelParser.parse(list);
+            simpleExcelParser.validate(mT);
+            simpleExcelParser.process(mT);
+        } catch (Exception e) {
+            simpleExcelParser.handleException(e);
+        }
+        list.clear();
     }
 
 }
