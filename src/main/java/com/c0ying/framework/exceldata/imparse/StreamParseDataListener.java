@@ -2,8 +2,8 @@ package com.c0ying.framework.exceldata.imparse;
 
 import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.event.AnalysisEventListener;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.c0ying.framework.exceldata.DealStatusDefaultMonitor;
+import com.c0ying.framework.exceldata.DealStatusMonitor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,17 +11,18 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class StreamParseDataListener<T> extends AnalysisEventListener<Map<Integer, String>> {
-    private static final Logger LOGGER = LoggerFactory.getLogger(StreamParseDataListener.class);
 
     private static final int BATCH_COUNT = 1000;
     private List<List<String>> list = new ArrayList<>();
 
     protected SimpleExcelParser simpleExcelParser;
+    protected DealStatusMonitor dealStatusMonitor;
     private boolean skipHead = true;
 
     public StreamParseDataListener(SimpleExcelParser<T> simpleExcelParser, boolean skipHead){
         this.simpleExcelParser = simpleExcelParser;
         this.skipHead = skipHead;
+        this.dealStatusMonitor = new DealStatusDefaultMonitor();
     }
 
     @Override
@@ -53,6 +54,8 @@ public class StreamParseDataListener<T> extends AnalysisEventListener<Map<Intege
             simpleExcelParser.process(mT);
         } catch (Exception e) {
             simpleExcelParser.handleException(e);
+        } finally {
+            simpleExcelParser.destroy();
         }
         list.clear();
     }

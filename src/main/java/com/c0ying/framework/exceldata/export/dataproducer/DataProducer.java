@@ -8,13 +8,9 @@ import java.util.Map;
  *
  * @param <T>
  */
-public interface DataProducer<T> {
+public interface DataProducer<T> extends DataProducerMonitor{
 
 	boolean hasMore();
-	
-	long getTotal();
-	
-	long getCurrent();
 	
 	T next();
 	

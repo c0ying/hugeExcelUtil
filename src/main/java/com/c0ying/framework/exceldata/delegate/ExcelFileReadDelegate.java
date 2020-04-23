@@ -1,6 +1,8 @@
 package com.c0ying.framework.exceldata.delegate;
 
 import com.alibaba.excel.EasyExcel;
+import com.c0ying.framework.exceldata.imparse.DefaultExcelParser;
+import com.c0ying.framework.exceldata.imparse.ImportProcesser;
 import com.c0ying.framework.exceldata.imparse.SimpleExcelParser;
 import com.c0ying.framework.exceldata.imparse.StreamParseDataListener;
 import com.c0ying.framework.exceldata.imparse.bean.ParseExcelException;
@@ -30,5 +32,9 @@ public class ExcelFileReadDelegate implements ExcelFileReadDelegater {
         }else{
             EasyExcel.read(fileUrl, new StreamParseDataListener(simpleExcelParser, true)).sheet().doRead();
         }
+    }
+
+    public<T> void readExcel(String fileUrl, ImportProcesser<T> importProcesser) throws Exception {
+        readExcel(fileUrl, new DefaultExcelParser<>(importProcesser, (List<String>) importProcesser.getContext().get("filedMappings")));
     }
 }

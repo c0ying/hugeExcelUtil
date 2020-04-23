@@ -27,9 +27,7 @@ public class TestWriteDataProducer extends SimpleDataAsyncProducer<List<String>>
     @Override
     public List<String> next() {
         page++;
-        List<String> data = new ArrayList<>();
-        data.add("testString");
-        return data;
+        return null;
     }
 
     @Override

@@ -2,7 +2,7 @@ package com.c0ying.framework.exceldata.export.bean;
 
 public class ExportExcelDataProperties {
 
-	private String tmpFilePath = "E:\\\\";
+	private String tmpFilePath = System.getProperty("java.io.tmpdir");
 
 	public String getTmpFilePath() {
 		return tmpFilePath;

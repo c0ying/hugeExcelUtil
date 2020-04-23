@@ -1,8 +1,6 @@
 package com.c0ying.framework;
 
-import com.c0ying.framework.exceldata.imparse.DataImportExcelHandler;
-import com.c0ying.framework.exceldata.imparse.SaxDataImportExcelHandler;
-import com.c0ying.framework.mock.Data;
+import com.c0ying.framework.exceldata.delegate.ExcelFileReadDelegate;
 import com.c0ying.framework.mock.TestReadDataParser;
 import org.junit.Test;
 
@@ -10,9 +8,9 @@ public class ReadExcelTest {
 
     @Test
     public void readExcelTest(){
-        DataImportExcelHandler<Data> importExcelHandler = new DataImportExcelHandler<Data>(new TestReadDataParser(), "file/10.xlsx");
+        ExcelFileReadDelegate excelFileReadDelegate = new ExcelFileReadDelegate();
         try {
-            importExcelHandler.call();
+            excelFileReadDelegate.readExcel(getResource("file/10.xlsx"), new TestReadDataParser());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -20,9 +18,11 @@ public class ReadExcelTest {
 
     @Test
     public void saxReadExcelTest(){
-        SaxDataImportExcelHandler<Data> importExcelHandler = new SaxDataImportExcelHandler<>(new TestReadDataParser(),getResource("file/10.xlsx"));
+        ExcelFileReadDelegate excelFileReadDelegate = new ExcelFileReadDelegate();
         try {
-            importExcelHandler.handler();
+            TestReadDataParser testReadDataParser = new TestReadDataParser();
+            testReadDataParser.getContext().put("runType", "sax");
+            excelFileReadDelegate.readExcel(getResource("file/10.xlsx"), testReadDataParser);
         } catch (Exception e) {
             e.printStackTrace();
         }

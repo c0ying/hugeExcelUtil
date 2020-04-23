@@ -2,6 +2,8 @@ package com.c0ying.framework.exceldata.imparse;
 
 import com.alibaba.excel.converters.Converter;
 import com.alibaba.excel.converters.DefaultConverterLoader;
+import com.c0ying.framework.exceldata.DealStatusDefaultMonitor;
+import com.c0ying.framework.exceldata.DealStatusMonitor;
 import com.c0ying.framework.exceldata.imparse.bean.ParseExcelException;
 import com.c0ying.framework.exceldata.utils.Assert;
 import net.sf.cglib.beans.BeanMap;
@@ -44,6 +46,7 @@ public abstract class SimpleExcelParser<T> implements ImportProcesser<T>{
 	private String clz;
 	private ThreadLocal<Map<String,Object>> context = new ThreadLocal<>();//运行上下文
 	protected ImportProcesser<T> importProcesser;
+	protected DealStatusMonitor dealStatusMonitor;
 	private List<String> defalutMappings;//默认映射字段
 	private Map<String, CustomTransformBean> customTransformBeanMap = new HashMap<>(0);
 	
@@ -124,6 +127,11 @@ public abstract class SimpleExcelParser<T> implements ImportProcesser<T>{
 			logger.info("start transforming Excel data to Bean list");
 			mT = transformBean(datas);
 			logger.info("process after transforming");
+			String taskId = (String) getContext().get("taskId");
+			if (taskId != null){
+				String exportStatus = dealStatusMonitor.getExportStatus(taskId);
+				dealStatusMonitor.setExportStatus(taskId, String.valueOf(Integer.parseInt(exportStatus)+mT.size()));
+			}
 		} catch (Exception e) {
 			handleException(e);
 			logger.info("transform error ");
@@ -154,10 +162,16 @@ public abstract class SimpleExcelParser<T> implements ImportProcesser<T>{
 		if (importProcesser != null) importProcesser.validate(mT);
 	}
 
-	protected void init(Map<String, Object> context) {}
+	protected void init(Map<String, Object> context) {
+		dealStatusMonitor = new DealStatusDefaultMonitor();
+	}
 
 	public void destroy(){
 		if (importProcesser != null) importProcesser.destroy();
+		String taskId = (String) getContext().get("taskId");
+		if (taskId != null){
+			dealStatusMonitor.clearExportStatus(taskId);
+		}
 		context.remove();
 	}
 

@@ -19,12 +19,6 @@
   </properties>
 
   <dependencies>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.11</version>
-      <scope>test</scope>
-    </dependency>
     <!-- https://mvnrepository.com/artifact/com.alibaba/easyexcel -->
     <dependency>
       <groupId>com.alibaba</groupId>
@@ -32,6 +26,12 @@
       <version>2.1.7</version>
     </dependency>
     <!--test-->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.11</version>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
