@@ -14,6 +14,7 @@ public class POIExcelFileWriteDelegate implements ExcelFileWriteDelegater {
     @Override
     public void init(String tempFile, String head, String delimiter) {
         workBook = ExcelWriteUtil.initExcel(head, delimiter);
+        wbFile = new File(tempFile);
     }
 
     @Override

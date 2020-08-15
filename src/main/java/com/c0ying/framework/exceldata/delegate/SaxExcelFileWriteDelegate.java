@@ -39,8 +39,11 @@ public class SaxExcelFileWriteDelegate implements ExcelFileWriteDelegater {
         private WriteSheet writeSheet;
 
         private SaxExcelWriteHandler(ExcelWriter excelWriter){
+            this(excelWriter, "sheet1");
+        }
+        private SaxExcelWriteHandler(ExcelWriter excelWriter, String sheetName){
             this.excelWriter = excelWriter;
-            this.writeSheet = EasyExcel.writerSheet("sheet1").build();
+            this.writeSheet = EasyExcel.writerSheet(sheetName).build();
         }
 
         public void writeExcelData(List data){

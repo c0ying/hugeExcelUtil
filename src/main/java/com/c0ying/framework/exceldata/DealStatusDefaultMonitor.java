@@ -16,7 +16,9 @@ public class DealStatusDefaultMonitor implements DealStatusMonitor {
 	
 	public String getExportStatus(String taskUid){
 		try {
-			return statusMap.get("deal_status_".concat(taskUid)).data.toString();
+			if (statusMap.containsKey(("deal_status_".concat(taskUid)))){
+				return statusMap.get("deal_status_".concat(taskUid)).data.toString();
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -33,7 +35,7 @@ public class DealStatusDefaultMonitor implements DealStatusMonitor {
 	protected void clearData(){
 		Iterator<Entry<String, StatusData>> iterator = statusMap.entrySet().iterator();
 		while (iterator.hasNext()){
-			if (iterator.next().getValue().expireTime >= System.currentTimeMillis()){
+			if (System.currentTimeMillis() >= iterator.next().getValue().expireTime){
 				iterator.remove();
 			}
 		}

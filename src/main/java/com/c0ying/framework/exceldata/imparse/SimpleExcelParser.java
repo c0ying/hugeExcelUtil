@@ -1,11 +1,10 @@
 package com.c0ying.framework.exceldata.imparse;
 
-import com.alibaba.excel.converters.Converter;
-import com.alibaba.excel.converters.DefaultConverterLoader;
 import com.c0ying.framework.exceldata.DealStatusDefaultMonitor;
 import com.c0ying.framework.exceldata.DealStatusMonitor;
 import com.c0ying.framework.exceldata.imparse.bean.ParseExcelException;
 import com.c0ying.framework.exceldata.utils.Assert;
+import com.c0ying.framework.exceldata.utils.Constants;
 import net.sf.cglib.beans.BeanMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +34,7 @@ import java.util.Map;
  * |
  * destroy() 资源销毁
  * 
- * @author Cyh
+ * @author c0ying
  *
  * @param <T>
  */
@@ -43,13 +42,14 @@ public abstract class SimpleExcelParser<T> implements ImportProcesser<T>{
 	
 	private Logger logger = LoggerFactory.getLogger(SimpleExcelParser.class);
 
-	private String clz;
-	private ThreadLocal<Map<String,Object>> context = new ThreadLocal<>();//运行上下文
 	protected ImportProcesser<T> importProcesser;
 	protected DealStatusMonitor dealStatusMonitor;
+	protected int batch_parse_count = Constants.PARSE_BATCH_DEFAULT_COUNT;
+	private String clz;
+	private ThreadLocal<Map<String,Object>> context = new ThreadLocal<>();//运行上下文
 	private List<String> defalutMappings;//默认映射字段
 	private Map<String, CustomTransformBean> customTransformBeanMap = new HashMap<>(0);
-	
+
 	public SimpleExcelParser(List<String> mappings) {
 		Assert.notNull(mappings, "mapping can not be null");
 		Type type = this.getClass().getGenericSuperclass();
@@ -94,13 +94,14 @@ public abstract class SimpleExcelParser<T> implements ImportProcesser<T>{
 		List<String> fieldsMappings = (List<String>) this.getContext().get("fieldsMapping");
 		if (fieldsMappings == null) fieldsMappings = defalutMappings;
 
-		Map<String, Converter> converterMap = DefaultConverterLoader.loadAllConverter();
-
+		Class<T> obj = (Class<T>) Class.forName(clz);
 		for (List<String> list : datas) {
+			T instance = (T) obj.newInstance();
+			BeanMap beanMap = BeanMap.create(instance);
 			if (list.size() <= 0 || fieldsMappings.size() <= 0) {
 				continue;
 			}
-			T obj = (T) Class.forName(clz);
+
 			for (int i = 0; i < fieldsMappings.size(); i++) {
 				if (list.size() < i) {
 					break;
@@ -110,11 +111,11 @@ public abstract class SimpleExcelParser<T> implements ImportProcesser<T>{
 				if (customTransformBeanMap.containsKey(key)) {
 					customTransformBeanMap.get(key).customTransform(obj, value, i, fieldsMappings, list);
 				}else {
-					BeanMap.create(obj).put(key, value);
+					beanMap.put(key, value);
 				}
 			}
 
-			reDatas.add(obj);
+			reDatas.add(instance);
 		}
 		return reDatas;
 	}
@@ -142,6 +143,9 @@ public abstract class SimpleExcelParser<T> implements ImportProcesser<T>{
 	public void setContext(Map<String, Object> context) {
 		this.context.set(context);
 		init(context);
+		if (context.containsKey(Constants.PARSE_BATCH_COUNT)) {
+			batch_parse_count = (int) context.get(Constants.PARSE_BATCH_COUNT);
+		}
 	}
 	
 	public Map<String, Object> getContext() {

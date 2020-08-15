@@ -2,11 +2,13 @@ package com.c0ying.framework.exceldata.export;
 
 import com.c0ying.framework.exceldata.DealStatusDefaultMonitor;
 import com.c0ying.framework.exceldata.DealStatusMonitor;
+import com.c0ying.framework.exceldata.delegate.ExcelFileWriteDelegate;
 import com.c0ying.framework.exceldata.delegate.ExcelFileWriteDelegater;
 import com.c0ying.framework.exceldata.delegate.POIExcelFileWriteDelegate;
 import com.c0ying.framework.exceldata.delegate.SaxExcelFileWriteDelegate;
 import com.c0ying.framework.exceldata.export.bean.ExportExcelDataProperties;
 import com.c0ying.framework.exceldata.export.dataproducer.SimpleDataAsyncProducer;
+import com.c0ying.framework.exceldata.utils.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,12 +20,17 @@ import java.io.File;
  * @author Cyh
  *
  */
-public class DefaultDataExportExcelHandler implements DataExportExcelHandler{
+public abstract class DefaultDataExportExcelHandler implements DataExportExcelHandler{
 
 	protected Logger logger  = LoggerFactory.getLogger(DefaultDataExportExcelHandler.class);
 
     public DefaultDataExportExcelHandler(){
         this.properties = new ExportExcelDataProperties();
+        this.exportStatusMonitor = new DealStatusDefaultMonitor();
+    }
+
+    public DefaultDataExportExcelHandler(ExportExcelDataProperties properties){
+        this.properties = properties;
         this.exportStatusMonitor = new DealStatusDefaultMonitor();
     }
 
@@ -33,26 +40,22 @@ public class DefaultDataExportExcelHandler implements DataExportExcelHandler{
     }
 
 	public void handler(String taskId, SimpleDataAsyncProducer<?> data) {
-		Object runType = data.getContext().getOrDefault("runType", "normal");
-		ExcelFileWriteDelegater excelFileWriteDelegater = null;
-		if (runType.equals("normal")){
-			excelFileWriteDelegater = new POIExcelFileWriteDelegate();
-		}else{
-			excelFileWriteDelegater = new SaxExcelFileWriteDelegate();
-		}
+		Object runType = data.getContext().getOrDefault(Constants.RUN_TYPE, Constants.RUN_TYPE_NORMAL);
+		ExcelFileWriteDelegater excelFileWriteDelegater = ExcelFileWriteDelegate.build((String) runType);
 		try {
 			logger.info("taskId:{} start to handle export", taskId);
 			exportStatusMonitor.setExportStatus(taskId, "0");
-			boolean noDataFlag = true;
+			boolean noDataFlag = true;//防止无数据导出也生成文件
 			boolean init = false;
 			while (data.hasMore()) {
 				if (!init){
 					if (noDataFlag) noDataFlag = false;
-					excelFileWriteDelegater.init(new File(properties.getTmpFilePath(), taskId.concat(".xlsx")).getAbsolutePath(), data.getHeadTitle(), data.delimiterFlag());
+					excelFileWriteDelegater.init(properties.getTmpFilePath().concat(taskId.concat(".xlsx")), data.getHeadTitle(), data.delimiterFlag());
 					init = true;
 				}
 				excelFileWriteDelegater.writeData(data.stringData(), data.delimiterFlag());
-				exportStatusMonitor.setExportStatus(taskId, String.format("%.2f", ((float)data.getCurrent())/data.getTotal()));
+				if (data.getCurrent() <= data.getTotal())
+					exportStatusMonitor.setExportStatus(taskId, String.format("%.2f", ((float)data.getCurrent())/data.getTotal()));
 			}
 			if (!noDataFlag) {
 				excelFileWriteDelegater.finish();

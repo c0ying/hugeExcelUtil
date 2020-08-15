@@ -22,6 +22,11 @@ public class AsyncDataExportExcelHandler extends DefaultDataExportExcelHandler {
         this.taskExecutor = Executors.newCachedThreadPool();
     }
 
+    public AsyncDataExportExcelHandler(ExportExcelDataProperties properties) {
+        super(properties);
+        this.taskExecutor = Executors.newCachedThreadPool();
+    }
+
     public AsyncDataExportExcelHandler(ExportExcelDataProperties properties, DealStatusMonitor dealStatusMonitor,ExecutorService taskExecutor) {
         super(properties, dealStatusMonitor);
         this.taskExecutor = taskExecutor;

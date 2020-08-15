@@ -7,7 +7,7 @@ import java.util.List;
 
 public class TestWriteDataProducer extends SimpleDataAsyncProducer<List<String>> {
 
-    private int page = 0;
+    private int page = 1;
 
     @Override
     public boolean hasMore() {

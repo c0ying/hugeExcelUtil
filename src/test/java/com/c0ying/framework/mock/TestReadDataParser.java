@@ -15,6 +15,7 @@ public class TestReadDataParser extends SimpleExcelParser<Data> {
     @Override
     public List<Data> process(List<Data> mT) throws ParseExcelException {
         System.out.println(mT.size());
+        mT.forEach(m -> System.out.println(m.toString()));
         return mT;
     }
 }
