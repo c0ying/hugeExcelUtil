@@ -1,6 +1,7 @@
 package com.c0ying.framework.exceldata.export.dataproducer;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -31,6 +32,31 @@ public abstract class SimpleDataAsyncProducer<T> implements DataProducer<T>, For
 		}
 		return null;
 	}
+
+	public boolean hasMore() {
+		return getCurrent() <= getTotal();
+	}
+
+	public long getTotal() {
+		return (long) getContext().get("T_TOTAL");
+	}
+
+	public long getCurrent() {
+		return (long) getContext().get("T_CURRENT");
+	}
+
+	public void setTotal(long total){
+		getContext().put("T_TOTAL", total);
+	}
+
+	public void setCurrent(long current){
+		getContext().put("T_CURRENT", current);
+	}
+
+	public T next() {
+		setCurrent(getCurrent()+1);
+		return null;
+	}
 	
 	public String delimiterFlag() {
 		return ",";
@@ -45,6 +71,7 @@ public abstract class SimpleDataAsyncProducer<T> implements DataProducer<T>, For
 			run_context.set(new HashMap<>());
 		}
 		run_context.get().put("param",param);
+		setCurrent(1);
 	}
 	
 	public void destroy() {

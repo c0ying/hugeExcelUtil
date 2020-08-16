@@ -4,30 +4,14 @@ import com.c0ying.framework.exceldata.export.dataproducer.SimpleDataAsyncProduce
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class TestWriteDataProducer extends SimpleDataAsyncProducer<List<String>> {
 
-    private int page = 1;
-
     @Override
-    public boolean hasMore() {
-        return getCurrent() <= getTotal();
-    }
-
-    @Override
-    public long getTotal() {
-        return 100;
-    }
-
-    @Override
-    public long getCurrent() {
-        return page;
-    }
-
-    @Override
-    public List<String> next() {
-        page++;
-        return null;
+    public void init(Map<String, Object> param) {
+        super.init(param);
+        setTotal(100);
     }
 
     @Override
@@ -41,4 +25,6 @@ public class TestWriteDataProducer extends SimpleDataAsyncProducer<List<String>>
     public String[] formate(List<String> data) {
         return data.toArray(new String[0]);
     }
+
+
 }

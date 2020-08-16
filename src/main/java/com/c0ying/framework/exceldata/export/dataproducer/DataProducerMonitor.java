@@ -4,5 +4,9 @@ public interface DataProducerMonitor {
 
     long getTotal();
 
+    void setTotal(long total);
+
     long getCurrent();
+
+    void setCurrent(long current);
 }

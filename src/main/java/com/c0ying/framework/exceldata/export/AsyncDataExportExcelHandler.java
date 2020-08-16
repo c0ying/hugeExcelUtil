@@ -56,14 +56,11 @@ public class AsyncDataExportExcelHandler extends DefaultDataExportExcelHandler {
 
         public void run() {
             try {
-                dataProducer.init((Map<String, Object>) taskContext.get("producer_context"));
-                handler(taskId, dataProducer);
+                handler(taskId, dataProducer, (Map<String, Object>) taskContext.get("producer_context"));
             } catch (Exception e) {
                 exportStatusMonitor.setExportStatus(taskId, "-100");
                 e.printStackTrace();
                 throw e;
-            }finally {
-                dataProducer.destroy();
             }
         }
     }

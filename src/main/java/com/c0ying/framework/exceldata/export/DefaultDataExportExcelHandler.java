@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.util.Map;
 
 /**
  * 
@@ -39,7 +40,8 @@ public abstract class DefaultDataExportExcelHandler implements DataExportExcelHa
         this.exportStatusMonitor = dealStatusMonitor;
     }
 
-	public void handler(String taskId, SimpleDataAsyncProducer<?> data) {
+	public void handler(String taskId, SimpleDataAsyncProducer<?> data, Map<String, Object> taskContext) {
+		data.init((Map<String, Object>) taskContext.get("producer_context"));
 		Object runType = data.getContext().getOrDefault(Constants.RUN_TYPE, Constants.RUN_TYPE_NORMAL);
 		ExcelFileWriteDelegater excelFileWriteDelegater = ExcelFileWriteDelegate.build((String) runType);
 		try {
@@ -65,6 +67,8 @@ public abstract class DefaultDataExportExcelHandler implements DataExportExcelHa
 		} catch (Exception e) {
 			logger.error("taskId:{} export handle occur error! exception:{}", taskId, e.getMessage());
 			throw new RuntimeException(e);
+		}finally {
+			data.destroy();
 		}
 	}
 
