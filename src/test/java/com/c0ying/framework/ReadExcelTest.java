@@ -19,7 +19,7 @@ public class ReadExcelTest {
         Map<String,Object> params = new HashMap<>();
         params.put(Constants.PARSE_BATCH_COUNT, Constants.PARSE_BATCH_DEFAULT_COUNT);
         dataParserExcelHandler.readExcel("123", getResource("file/py-ts.xlsx"), new TestReadDataParser(), params);
-        System.out.println(dataParserExcelHandler.getDealStatus("123"));
+        System.out.println("process-status:"+dataParserExcelHandler.getDealStatus("123").getStatus());
     }
 
     @Test
@@ -28,7 +28,7 @@ public class ReadExcelTest {
         Map<String,Object> params = new HashMap<>();
         params.put(Constants.RUN_TYPE, Constants.RUN_TYPE_SAX);
         dataParserExcelHandler.readExcel("123", getResource("file/py-ts.xlsx"), new TestReadDataParser(), params);
-        System.out.println(dataParserExcelHandler.getDealStatus("123"));
+        System.out.println("process-status:"+dataParserExcelHandler.getDealStatus("123").getStatus());
     }
 
     @Test
@@ -37,13 +37,13 @@ public class ReadExcelTest {
         Map<String,Object> params = new HashMap<>();
         params.put(Constants.RUN_TYPE, Constants.RUN_TYPE_SAX);
         String taskId = asyncDataParserExcelHandler.startTask(getResource("file/py-ts.xlsx"), new TestReadDataParser(), params);
-        DealStatus exportStatus = asyncDataParserExcelHandler.getDealStatus(taskId);
-        while (!exportStatus.isFinished() && !exportStatus.isException()){
-            System.out.printf("process-status:%s \n", exportStatus.getStatus());
+        DealStatus dealStatus = asyncDataParserExcelHandler.getDealStatus(taskId);
+        while (!dealStatus.isFinished() && !dealStatus.isException()){
+            System.out.printf("process-status:%s \n", dealStatus.getStatus());
             Thread.sleep(1000L);
-            exportStatus = asyncDataParserExcelHandler.getDealStatus(taskId);
+            dealStatus = asyncDataParserExcelHandler.getDealStatus(taskId);
         }
-        System.out.printf("process-status:%s \n", exportStatus.getStatus());
+        System.out.printf("process-status:%s \n", dealStatus.getStatus());
     }
 
     private String getResource(String fileUrl){

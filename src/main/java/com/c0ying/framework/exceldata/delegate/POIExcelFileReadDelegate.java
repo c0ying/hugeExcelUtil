@@ -19,7 +19,7 @@ public class POIExcelFileReadDelegate implements ExcelFileReadDelegater {
     @Override
     public <T> void readExcel(String fileUrl, SimpleExcelParser<T> simpleExcelParser) throws Exception {
         try {
-            if ((int) simpleExcelParser.getContext().getOrDefault(Constants.PARSE_BATCH_COUNT, 0) >0) {
+            if ((int) simpleExcelParser.getContext().getOrDefault(Constants.PARSE_BATCH_COUNT, 0) <=0) {
                 logger.info("Parse Excel in Normal mode and all once deal");
                 List<List<String>> contentStrList =  ExcelReadUtil.readExcel(new File(fileUrl), true);
                 if (contentStrList == null) {

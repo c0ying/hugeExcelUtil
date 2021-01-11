@@ -10,13 +10,16 @@ import java.util.Map;
 
 public class TestReadDataParser extends SimpleExcelParser<Data> {
 
+    private int i =1;
+
     public TestReadDataParser() {
         super(Arrays.asList("data","flag"));
     }
 
     @Override
     public List<Data> process(List<Data> mT) throws ParseExcelException {
-        System.out.println(mT.size());
+        //System.out.println(mT.size());
+        System.out.println(i++);
 //        mT.forEach(m -> System.out.println(m.toString()));
         return mT;
     }

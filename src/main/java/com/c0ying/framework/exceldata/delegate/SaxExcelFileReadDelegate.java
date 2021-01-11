@@ -35,15 +35,22 @@ public class SaxExcelFileReadDelegate implements ExcelFileReadDelegater {
         }
 
         @Override
+        public void invokeHeadMap(Map<Integer, String> headMap, AnalysisContext context) {
+            if (!skipHead){
+                list.add(headMap.values().stream().collect(Collectors.toList()));
+            }
+        }
+
+        @Override
+        public void onException(Exception exception, AnalysisContext context) throws Exception {
+            simpleExcelParser.handleException(exception);
+            simpleExcelParser.destroy();
+        }
+
+        @Override
         public void invoke(Map<Integer, String> data, AnalysisContext context) {
-            if (list.size() <= (int) simpleExcelParser.getContext().getOrDefault(Constants.PARSE_BATCH_COUNT, Constants.PARSE_BATCH_DEFAULT_COUNT)) {
-                if (skipHead){
-                    if(context.readRowHolder().getRowIndex() == 0){
-                        return;
-                    }
-                }
-                list.add(data.values().stream().collect(Collectors.toList()));
-            }else{
+            list.add(data.values().stream().collect(Collectors.toList()));
+            if (list.size() >= (int) simpleExcelParser.getContext().getOrDefault(Constants.PARSE_BATCH_COUNT, Constants.PARSE_BATCH_DEFAULT_COUNT)) {
                 try {
                     List<T> mT = simpleExcelParser.parse(list);
                     simpleExcelParser.validate(mT);
@@ -51,6 +58,7 @@ public class SaxExcelFileReadDelegate implements ExcelFileReadDelegater {
                 } catch (Exception e) {
                     simpleExcelParser.handleException(e);
                     simpleExcelParser.destroy();
+                } finally {
                     list.clear();
                 }
             }
@@ -65,8 +73,8 @@ public class SaxExcelFileReadDelegate implements ExcelFileReadDelegater {
             } catch (Exception e) {
                 simpleExcelParser.handleException(e);
             } finally {
-                simpleExcelParser.destroy();
                 list.clear();
+                simpleExcelParser.destroy();
             }
         }
 
