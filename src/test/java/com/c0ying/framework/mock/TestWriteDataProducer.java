@@ -1,12 +1,12 @@
 package com.c0ying.framework.mock;
 
-import com.c0ying.framework.exceldata.export.dataproducer.SimpleDataAsyncProducer;
+import com.c0ying.framework.exceldata.export.dataproducer.SimpleDataProducer;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class TestWriteDataProducer extends SimpleDataAsyncProducer<List<String>> {
+public class TestWriteDataProducer extends SimpleDataProducer<List<String>> {
 
     @Override
     public void init(Map<String, Object> param) {

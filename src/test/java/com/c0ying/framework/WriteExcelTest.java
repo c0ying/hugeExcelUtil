@@ -1,13 +1,11 @@
 package com.c0ying.framework;
 
 import com.c0ying.framework.exceldata.export.AsyncDataExportExcelHandler;
-import com.c0ying.framework.exceldata.export.DefaultDataExportExcelHandler;
 import com.c0ying.framework.exceldata.export.bean.ExportExcelDataProperties;
 import com.c0ying.framework.exceldata.utils.Constants;
 import com.c0ying.framework.mock.TestWriteDataProducer;
 import org.junit.Test;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -15,7 +13,6 @@ public class WriteExcelTest {
 
     @Test
     public void testWriteExcel() throws InterruptedException {
-
         ExportExcelDataProperties properties = new ExportExcelDataProperties();
         properties.setTmpFilePath("D:\\");
         AsyncDataExportExcelHandler exportExcelHandler = new AsyncDataExportExcelHandler(properties);

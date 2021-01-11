@@ -27,6 +27,7 @@ public class POIExcelFileWriteDelegate implements ExcelFileWriteDelegater {
         try (FileOutputStream outputStream = new FileOutputStream(wbFile)){
             workBook.write(outputStream);
         }catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 }
