@@ -5,6 +5,20 @@
 
 **使用 alibaba EasyExcel** 实现Sax模式写入与读取Excel，减少POI框架解析Excel文件过大时或并发量大时占用堆内存导致系统崩溃
 
+#### 性能概况
+
+使用100W两列xlsx文件测试。（test/resources/file/py-ts.xlsx）
+
+1. POI解析Excel会把文件放入内存处理，在解析大文件容易造成堆溢出问题
+
+![poi-parser](doc\img\poi-parser.png)
+
+1. alibaba EasyExcel 解析Excel使用Sax流式处理，使用内存很小且处理速度非常快
+
+![sax-parser](doc\img\sax-parser.png)
+
+----
+
 ### 导出Excel
 1.实现数据生产者
 ```
@@ -131,13 +145,13 @@ AsyncDataParserExcelHandler asyncDataParserExcelHandler = new AsyncDataParserExc
 Map<String,Object> params = new HashMap<>();//运行参数
 params.put(Constants.RUN_TYPE, Constants.RUN_TYPE_SAX);//默认使用POI解析框架，指定SAX模式解析Excel
 String taskId = asyncDataParserExcelHandler.startTask(getResource("file/py-ts.xlsx"), new TestReadDataParser(), params);
-DealStatus exportStatus = asyncDataParserExcelHandler.getDealStatus(taskId);
-while (!exportStatus.isFinished() && !exportStatus.isException()){
+DealStatus dealStatus = asyncDataParserExcelHandler.getDealStatus(taskId);
+while (!dealStatus.isFinished() && !dealStatus.isException()){
     System.out.printf("process-status:%s \n", exportStatus.getStatus());
     Thread.sleep(1000L);
-    exportStatus = asyncDataParserExcelHandler.getDealStatus(taskId);
+    dealStatus = asyncDataParserExcelHandler.getDealStatus(taskId);
 }
-System.out.printf("process-status:%s \n", exportStatus.getStatus());
+System.out.printf("process-status:%s \n", dealStatus.getStatus());
 ```
 
 #### 其他配置内容
@@ -193,7 +207,20 @@ System.out.printf("process-status:%s \n", exportStatus.getStatus());
   //指定批量模式下处理数据量大小，默认为一次模式。使用批量模式，可以减少业务处理逻辑占用内存，加快内存的回收
   params.put(Constants.PARSE_BATCH_COUNT, Constants.PARSE_BATCH_DEFAULT_COUNT);
   dataParserExcelHandler.readExcel("123", getResource("file/py-ts.xlsx"), new TestReadDataParser(), params);
-  System.out.println(dataParserExcelHandler.getDealStatus("123"));
+  System.out.println(dataParserExcelHandler.getDealStatus("123").getStatus());
+  ```
+
+- 获取异步导入处理进度
+
+  ```
+  DealStatus dealStatus = asyncDataParserExcelHandler.getDealStatus(taskId);
+  //属性
+  /*
+  String status;//已处理数据量
+  boolean finished;//任务是否完成
+  boolean exception;//任务是否异常
+  String errorMsg;//异常信息
+  */
   ```
 
   
@@ -203,4 +230,17 @@ System.out.printf("process-status:%s \n", exportStatus.getStatus());
 2.导出
 
 - 导出文件位置设置
+
 - 异步任务最大量设置
+
+- 获取异步导出处理进度
+
+  ```
+  String exportStatus = exportExcelHandler.getExportStatus(taskId);
+  //exportStatus为处理进度百分比数值
+  //当数值为-100时，任务出现异常
+  //获取异常信息
+  String exportErrMsg = exportExcelHanlder.getErrorMsg(String taskUid);
+  ```
+
+  
