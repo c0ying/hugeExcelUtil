@@ -11,11 +11,11 @@
 
 1. POI解析Excel会把文件放入内存处理，在解析大文件容易造成堆溢出问题
 
-![poi-parser](doc\img\poi-parser.png)
+![poi-parser](doc/img/poi-parser.png)
 
 1. alibaba EasyExcel 解析Excel使用Sax流式处理，使用内存很小且处理速度非常快
 
-![sax-parser](doc\img\sax-parser.png)
+![sax-parser](doc/img/sax-parser.png)
 
 ----
 
